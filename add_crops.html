@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <title>Add Crops to your basket</title>
+  <script src="https://kit.fontawesome.com/e2ac9cc532.js" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="css/add_crops.css">
+  <script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js@1.0.0-beta.36/dist/web3.min.js" integrity="sha256-nWBTbvxhJgjslRyuAKJHK+XcZPlCnmIAAMixz6EefVk=" crossorigin="anonymous"></script>
+</head>
+<body>
+<!-- partial:index.partial.html -->
+<div class='signup-container'>
+  <div class='left-container'>
+      <img src='https://cdn.pixabay.com/photo/2017/08/05/12/33/flat-lay-2583213_1280.jpg'>
+  </div>
+  <div class='right-container'>
+    <header>
+      <h3>Enter the information below and perform a valid transaction</h3>
+      <form id="crop_form">
+      <div class='crop_number'>
+        <label for="crop_number">Enter Crop Number</label>
+          <input type="text" id="crop_number" name="crop-number" placeholder="Crop Number" required>
+      </div>
+    </form>
+    <p id="cropsData"></p>
+      <form id="myForm">
+      <div class='set'>
+        <div class='crop_id'>
+          <label for='crop_id'>Enter Crop ID</label>
+          <input type="text" id="crop_id" name="crop-id" placeholder="Crop ID" required>
+        </div>
+      </div>
+      <div class='set'>
+        <div class='crop_quantity'>
+          <label for='crop_quantity'>Enter quantity of crops required</label>
+          <input type="text" id="crop_quantity" name="quantity" placeholder="Crop Quantity" required>
+        </div>
+        </div>
+        <div class='farm_address'>
+          <label for='farm_address'>Enter your Ethereum address</label>
+          <input type="text" id="farmer_add" name="farmer_address" placeholder="Farmer Ethereum Address" required>
+        </div>
+        </form>
+        
+    </header>
+    <footer>
+      <div class='set'>
+        <button id="next"><a href="/">Home</a></button>
+        <button id="next" onclick="add_Crops()">Add Crops</button>
+        <button id="next" onclick="checkCrop()">CheckCrops</button>
+        <button id="next" onclick="countCrop()">CountCrops</button>
+      </div>
+    </footer>
+  </div>
+</div>
+<!-- partial -->
+<script>
+  let account;
+  const connectContract = async () => {
+      const ABI = [
+      {
+              "inputs": [
+                {
+                  "internalType": "uint256",
+                  "name": "",
+                  "type": "uint256"
+                }
+              ],
+              "name": "Sales",
+              "outputs": [
+                {
+                  "internalType": "address",
+                  "name": "seller",
+                  "type": "address"
+                },
+                {
+                  "internalType": "address",
+                  "name": "reciever",
+                  "type": "address"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "Price",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "quantity",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "cropID",
+                  "type": "uint256"
+                }
+              ],
+              "stateMutability": "view",
+              "type": "function"
+            },
+            {
+              "inputs": [
+                {
+                  "internalType": "uint256",
+                  "name": "_cropID",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "_total_quantity",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "address",
+                  "name": "_farmer",
+                  "type": "address"
+                }
+              ],
+              "name": "addCrop",
+              "outputs": [],
+              "stateMutability": "payable",
+              "type": "function"
+            },
+            {
+              "inputs": [],
+              "name": "cropCount",
+              "outputs": [
+                {
+                  "internalType": "uint256",
+                  "name": "",
+                  "type": "uint256"
+                }
+              ],
+              "stateMutability": "view",
+              "type": "function"
+            },
+            {
+              "inputs": [
+                {
+                  "internalType": "uint256",
+                  "name": "",
+                  "type": "uint256"
+                }
+              ],
+              "name": "crops",
+              "outputs": [
+                {
+                  "internalType": "uint256",
+                  "name": "cropID",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "total_quantity",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "address",
+                  "name": "farmer",
+                  "type": "address"
+                }
+              ],
+              "stateMutability": "view",
+              "type": "function"
+            },
+            {
+              "inputs": [
+                {
+                  "internalType": "uint256",
+                  "name": "_cropID",
+                  "type": "uint256"
+                }
+              ],
+              "name": "history",
+              "outputs": [
+                {
+                  "internalType": "address[]",
+                  "name": "",
+                  "type": "address[]"
+                },
+                {
+                  "internalType": "address[]",
+                  "name": "",
+                  "type": "address[]"
+                },
+                {
+                  "internalType": "uint256[]",
+                  "name": "",
+                  "type": "uint256[]"
+                },
+                {
+                  "internalType": "uint256[]",
+                  "name": "",
+                  "type": "uint256[]"
+                }
+              ],
+              "stateMutability": "view",
+              "type": "function"
+            },
+            {
+              "inputs": [
+                {
+                  "internalType": "address",
+                  "name": "",
+                  "type": "address"
+                }
+              ],
+              "name": "people",
+              "outputs": [
+                {
+                  "internalType": "uint256",
+                  "name": "typeID",
+                  "type": "uint256"
+                }
+              ],
+              "stateMutability": "view",
+              "type": "function"
+            },
+            {
+              "inputs": [],
+              "name": "total_sales",
+              "outputs": [
+                {
+                  "internalType": "uint256",
+                  "name": "",
+                  "type": "uint256"
+                }
+              ],
+              "stateMutability": "view",
+              "type": "function"
+            },
+            {
+              "inputs": [
+                {
+                  "internalType": "address",
+                  "name": "_to",
+                  "type": "address"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "_price",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "_quantity",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "_cropID",
+                  "type": "uint256"
+                }
+              ],
+              "name": "transferCrop",
+              "outputs": [],
+              "stateMutability": "payable",
+              "type": "function"
+            }
+      ];
+      const Address = "0xB0681D6E76842B5838cB526473498FCFe499Ab83";
+      window.web3 = await new Web3(window.ethereum);
+      window.contract = await new window.web3.eth.Contract(ABI, Address);
+      
+  }
+  const add_Crops = async () => {
+      if(window.ethereum !== "undefined"){
+          const accounts = await ethereum.request({method: "eth_requestAccounts"});
+          account = accounts[0];
+          console.log(account)
+      }
+      await connectContract();
+      const crop_id = document.getElementById("crop_id").value;
+      const crop_quantity = document.getElementById("crop_quantity").value;
+      const farmer_address = document.getElementById("farmer_add").value;
+      console.log(crop_id,crop_quantity,farmer_address);
+      await window.contract.methods.addCrop(crop_id,crop_quantity,farmer_address).send({from: account });
+      alert("Transaction Completed Successfully!");
+      document.getElementById("myForm").reset();
+      document.getElementById("crop_form").reset();
+      document.getElementById("cropsData").innerHTML="";
+  }
+  const checkCrop= async () => {
+    await connectContract();
+    const crop_number = document.getElementById("crop_number").value;
+    data1=await window.contract.methods.crops(crop_number).call();
+    document.getElementById("cropsData").innerHTML = `<b>CropID : </b>${data1[0]}<br />
+                                                        <b>Quantity of Crop taken : </b>${data1[1]}<br />
+                                                        <b>Farmers address who bought the crop : </b>${data1[2]}<br />`;
+                                                        document.getElementById("myForm").reset();
+  }
+  const countCrop= async () => {
+    await connectContract();
+    data=await window.contract.methods.cropCount().call();
+    document.getElementById("cropsData").innerHTML = `<b>Total Number of Crops found: </b>${data}<br />`;
+  }
+
+  </script>
+</body>
+</html>
